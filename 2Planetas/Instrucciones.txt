@@ -1,0 +1,2 @@
+plot "pefrl2.dat" w l
+pause 3
