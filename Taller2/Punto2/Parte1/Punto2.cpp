@@ -34,6 +34,7 @@ public:
   void ImposeFields(int t);
   void Advection(void);
   void Print(const char * NameFile);
+  void WaveLenght(const char * NameFile);
 };
 
 LatticeBoltzmann::LatticeBoltzmann(void){
@@ -140,6 +141,18 @@ void LatticeBoltzmann::Print(const char * NameFile){
   }
   MyFile.close();
 }
+void LatticeBoltzmann::WaveLenght(const char * NameFile){
+  ofstream MyFile(NameFile); double rho0; int ix; int iy;
+  for(ix=0;ix<200;ix++){
+    for(iy=0;iy<200;iy++){
+      rho0=rho(ix,iy,true);
+    //MyFile<<ix<<" "<<rho0<<endl;
+      if(rho0>7.5){MyFile<<ix<<" "<<iy<<endl;};
+    }
+    MyFile<<endl;
+  }
+  MyFile.close();
+}
 //------Programa Principal------//
 int main(void){
   LatticeBoltzmann Ondas;
@@ -152,6 +165,7 @@ int main(void){
     Ondas.ImposeFields(t);
     Ondas.Advection();
   }
-  Ondas.Print("Ondas_4.dat");
+  //Ondas.Print("Ondas_4.dat");
+  Ondas.WaveLenght("LongitudDeOnda20.dat");
   return 0;
 } 

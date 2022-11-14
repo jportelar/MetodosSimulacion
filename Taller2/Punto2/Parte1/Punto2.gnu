@@ -6,4 +6,4 @@ set pm3d map
 set size ratio 1
 set terminal jpeg enhanced 
 set output "Ondas_4.jpg"
-splot "Ondas_4.dat"
+splot "Ondas_4.dat" 
