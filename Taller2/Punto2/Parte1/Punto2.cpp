@@ -8,7 +8,7 @@ const int Ly=200;
 
 const int Q=5;
 const double W0=1.0/3;
-const double theta=20;
+const double theta=0.0;
 
 const double tau=0.5;
 const double Utau=1.0/tau;
@@ -146,8 +146,7 @@ void LatticeBoltzmann::WaveLenght(const char * NameFile){
   for(ix=0;ix<200;ix++){
     for(iy=0;iy<200;iy++){
       rho0=rho(ix,iy,true);
-    //MyFile<<ix<<" "<<rho0<<endl;
-      if(rho0>7.5){MyFile<<ix<<" "<<iy<<endl;};
+      if(rho0>6.5){MyFile<<ix<<" "<<iy<<endl;};
     }
     MyFile<<endl;
   }
@@ -166,6 +165,6 @@ int main(void){
     Ondas.Advection();
   }
   //Ondas.Print("Ondas_4.dat");
-  Ondas.WaveLenght("LongitudDeOnda20.dat");
+  Ondas.WaveLenght("LongitudDeOnda.dat");
   return 0;
 } 

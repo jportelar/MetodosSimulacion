@@ -35,7 +35,7 @@ public:
   void Collision(void);
   void ImposeFields(int t);
   void Advection(void);
-  void Print(const char * NameFile);
+  void Print(const char * NameFile1, const char * NameFile2);
 };
 
 LatticeBoltzmann::LatticeBoltzmann(void){
@@ -92,17 +92,21 @@ void LatticeBoltzmann::Start(double rho0, double Jx0, double Jy0){
       }
 }
 void LatticeBoltzmann::Collision(void){
-  int ix,iy,i,n0; double rho0,Jx0,Jy0;
+  int ix,iy,i,j,n011,n012,n02; double rho0,Jx0,Jy0;
   for(ix=0;ix<Lx;ix++)
     for(iy=0;iy<Ly;iy++){
-      if((ix*ix+iy*iy)>100*100 && (ix*ix+iy*iy)<200*200){
-        
+      if((pow(ix-50,2)+pow(iy-100,2))>100*100 && ix<200 && ix>50){
+        for(j=0;j<Q;j++){
+          n011=n(ix,iy,j);//Se guarda el indice previo
+          n012=n(ix,iy,(j+2)%Q);//Se gruarda el siguiente
+          fnew[n012]=f[n011]; //Se intercambian contenidos
+        }
       }
       else{
         rho0=rho(ix,iy,false); Jx0=Jx(ix,iy,false); Jy0=Jy(ix,iy,false);
         for(i=0;i<Q;i++){
-          n0=n(ix,iy,i);
-          fnew[n0]=UmUtau*f[n0]+Utau*feq(rho0,Jx0,Jy0,i);
+          n02=n(ix,iy,i);
+          fnew[n02]=UmUtau*f[n02]+Utau*feq(rho0,Jx0,Jy0,i);
         }
       }     
     }
@@ -110,11 +114,13 @@ void LatticeBoltzmann::Collision(void){
 void LatticeBoltzmann::ImposeFields(int t){
   int i,ix,iy,n0;
   double lambda,omega,rho0,Jx0,Jy0; lambda=10; omega=2*M_PI/lambda*C;
-  ix=Lx/2; iy=Ly/2;
-  rho0=10*sin(omega*t); Jx0=Jx(ix,iy,false); Jy0=Jy(ix,iy,false);
-  for(i=0;i<Q;i++){
-    n0=n(ix,iy,i);
-    fnew[n0]=feq(rho0,Jx0,Jy0,i);
+  ix=0;
+  for(iy=0;iy<Ly;iy++){
+    rho0=10*sin(omega*t); Jx0=Jx(ix,iy,false); Jy0=Jy(ix,iy,false);
+    for(i=0;i<Q;i++){
+      n0=n(ix,iy,i);
+      fnew[n0]=feq(rho0,Jx0,Jy0,i);
+    }
   }
 }
 void LatticeBoltzmann::Advection(void){
@@ -127,21 +133,28 @@ void LatticeBoltzmann::Advection(void){
         f[n0next]=fnew[n0];
       }
 }
-void LatticeBoltzmann::Print(const char * NameFile){
-  ofstream MyFile(NameFile); double rho0; int ix,iy;
+void LatticeBoltzmann::Print(const char * NameFile1, const char * NameFile2){
+  ofstream MyFile1(NameFile1); ofstream MyFile2(NameFile2); double rho0; int ix,iy;
   for(ix=0;ix<Lx;ix++){
     for(iy=0;iy<Ly;iy++){
       rho0=rho(ix,iy,true);
-      MyFile<<ix<<" "<<iy<<" "<<rho0<<endl;
+      if(rho0>17.0){
+        MyFile2<<ix<<" "<<iy<<endl;
+      }
+      else{
+        MyFile1<<ix<<" "<<iy<<" "<<rho0<<endl;
+      }
     }
-    MyFile<<endl;
+    MyFile1<<endl;
+    MyFile2<<endl;
   }
-  MyFile.close();
+  MyFile1.close();
+  MyFile2.close();
 }
 //------Programa Principal------//
 int main(void){
   LatticeBoltzmann Ondas;
-  int t,tmax=100;
+  int t,tmax=500;
   double rho0=0, Jx0=0, Jy0=0;
   
   Ondas.Start(rho0,Jx0,Jy0);
@@ -150,6 +163,6 @@ int main(void){
     Ondas.ImposeFields(t);
     Ondas.Advection();
   }
-  Ondas.Print("Ondas.dat");
+  Ondas.Print("Espejo.dat","PuntoFocal.dat");
   return 0;
 } 
